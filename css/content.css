@@ -19,16 +19,12 @@
 
 /* 暗色主题适配 */
 @media (prefers-color-scheme: dark) {
-  .vocabmeld-translated .vocabmeld-word {
-    color: #818cf8 !important;
-  }
-  
-  .vocabmeld-translated .vocabmeld-original {
-    color: #94a3b8 !important;
+  .vocabmeld-translated {
+    text-decoration-color: #818cf8 !important;
   }
   
   .vocabmeld-translated:hover {
-    background: rgba(129, 140, 248, 0.2) !important;
+    background: rgba(129, 140, 248, 0.15) !important;
   }
 }
 
@@ -77,19 +73,23 @@
   font-family: inherit !important;
   line-height: inherit !important;
   vertical-align: baseline !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+  text-decoration-color: #6366f1 !important;
+  text-underline-offset: 2px !important;
+  margin-left: 0.15em !important;
+  margin-right: 0.15em !important;
 }
 
 .vocabmeld-translated .vocabmeld-word {
-  color: #6366f1 !important;
-  font-weight: 500 !important;
-  text-decoration: underline !important;
-  text-decoration-style: dotted !important;
-  text-underline-offset: 2px !important;
+  color: inherit !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
 }
 
 .vocabmeld-translated .vocabmeld-original {
-  color: #64748b !important;
-  font-size: 0.85em !important;
+  color: inherit !important;
+  font-size: inherit !important;
   margin-left: 2px !important;
 }
 
