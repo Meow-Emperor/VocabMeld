@@ -145,6 +145,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
   
+  // 发送 API 请求（避免 CORS 问题）
+  if (message.action === 'apiRequest') {
+    callApi(message.endpoint, message.apiKey, message.body)
+      .then(data => sendResponse({ success: true, data }))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
+  
   // 获取统计数据
   if (message.action === 'getStats') {
     chrome.storage.sync.get([
@@ -212,6 +220,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+// 通用 API 调用（从 background 发起，避免 CORS）
+async function callApi(endpoint, apiKey, body) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+  
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error?.message || `API Error: ${response.status}`);
+  }
+  
+  return await response.json();
+}
 
 // 测试 API 连接
 async function testApiConnection(endpoint, apiKey, model) {

@@ -730,29 +730,32 @@ ${filteredText}
 ## 输出：
 只返回 JSON 数组，不要其他内容。`;
 
-        const headers = { 'Content-Type': 'application/json' };
-        if (config.apiKey) headers['Authorization'] = `Bearer ${config.apiKey}`;
-        
-        const response = await fetch(config.apiEndpoint, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            model: config.modelName,
-            messages: [
-              { role: 'system', content: '你是一个专业的语言学习助手。始终返回有效的 JSON 格式。' },
-              { role: 'user', content: prompt }
-            ],
-            temperature: 0.3,
-            max_tokens: 2000
-          })
+        const apiResponse = await new Promise((resolve, reject) => {
+          chrome.runtime.sendMessage({
+            action: 'apiRequest',
+            endpoint: config.apiEndpoint,
+            apiKey: config.apiKey,
+            body: {
+              model: config.modelName,
+              messages: [
+                { role: 'system', content: '你是一个专业的语言学习助手。始终返回有效的 JSON 格式。' },
+                { role: 'user', content: prompt }
+              ],
+              temperature: 0.3,
+              max_tokens: 2000
+            }
+          }, response => {
+            if (chrome.runtime.lastError) {
+              reject(new Error(chrome.runtime.lastError.message));
+            } else if (!response?.success) {
+              reject(new Error(response?.error || 'API request failed'));
+            } else {
+              resolve(response.data);
+            }
+          });
         });
 
-        if (!response.ok) {
-          const error = await response.json().catch(() => ({}));
-          throw new Error(error.error?.message || `API Error: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = apiResponse;
         const content = data.choices?.[0]?.message?.content || '[]';
         
         let allResults = [];
@@ -916,29 +919,32 @@ ${uncached.join(', ')}
 ## 输出：
 只返回 JSON 数组，不要其他内容。`;
 
-        const headers = { 'Content-Type': 'application/json' };
-        if (config.apiKey) headers['Authorization'] = `Bearer ${config.apiKey}`;
-        
-        const response = await fetch(config.apiEndpoint, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            model: config.modelName,
-            messages: [
-              { role: 'system', content: '你是一个专业的语言学习助手。始终返回有效的 JSON 格式。' },
-              { role: 'user', content: prompt }
-            ],
-            temperature: 0.3,
-            max_tokens: 1000
-          })
+        const apiResponse = await new Promise((resolve, reject) => {
+          chrome.runtime.sendMessage({
+            action: 'apiRequest',
+            endpoint: config.apiEndpoint,
+            apiKey: config.apiKey,
+            body: {
+              model: config.modelName,
+              messages: [
+                { role: 'system', content: '你是一个专业的语言学习助手。始终返回有效的 JSON 格式。' },
+                { role: 'user', content: prompt }
+              ],
+              temperature: 0.3,
+              max_tokens: 1000
+            }
+          }, response => {
+            if (chrome.runtime.lastError) {
+              reject(new Error(chrome.runtime.lastError.message));
+            } else if (!response?.success) {
+              reject(new Error(response?.error || 'API request failed'));
+            } else {
+              resolve(response.data);
+            }
+          });
         });
 
-        if (!response.ok) {
-          const error = await response.json().catch(() => ({}));
-          throw new Error(error.error?.message || `API Error: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = apiResponse;
         const content = data.choices?.[0]?.message?.content || '[]';
 
         let apiResults = [];
